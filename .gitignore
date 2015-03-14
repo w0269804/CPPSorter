@@ -227,5 +227,8 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
+# Output Files
+*.txt
+
 # Windows shortcuts
 *.lnk
