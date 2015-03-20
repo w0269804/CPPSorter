@@ -1,20 +1,29 @@
 #include "Sorter.h"
+ /* 
+	References
+		 Insertion Sort: http://en.wikibooks.org/wiki/Algorithm_Implementation/Sorting/Insertion_sort
+		 Merge Sort: http://en.wikibooks.org/wiki/Algorithm_Implementation/Sorting/Merge_sort
+		 Quick Sort: Hal O'Connel's lecture slides from Data Structures (Prog 2400, 2015)
+		 Bubble Sort: Hal O'Connel's lecture slides from Data Structures (Prog 2400, 2015)
+		 Shell Sort: Hal O'Connel's lecture slides from Data Structures (Prog 2400, 2015)
+		 External Merge Sort: Original
+*/
 
-
-// References
-// Insertion Sort: http://en.wikibooks.org/wiki/Algorithm_Implementation/Sorting/Insertion_sort
-// Merge Sort: http://en.wikibooks.org/wiki/Algorithm_Implementation/Sorting/Merge_sort
-// Quick Sort: Hal O'Connel's lecture slides from Data Structures (Prog 2400, 2015)
-// Bubble Sort: Hal O'Connel's lecture slides from Data Structures (Prog 2400, 2015)
-// Shell Sort: Hal O'Connel's lecture slides from Data Structures (Prog 2400, 2015)
-// External Merge Sort: Original
-
+/*
+	TODO
+		 1. Remove the linesRemain function and replace it with a seek or EOF in the main external merge.
+		 2. Implement some exception handling: especially where I'm playing loose with files and array indexing.
+		 3. Rename some counter variables and temp variables to be more descriptive. No one likes reading "j".
+		 4. Break out the print functionality into a separate class.
+		 5. Comment the steps involved with external merge sort.
+*/
 
 // createArray()
 // ============================================
 // Fill the array with random numbers 
 // ranging from 0 to the maximum defined
 // as a constant within the sorter.
+// ============================================
 void Sorter::createArray(num * array, int size)
 {
 	for (int i = 0; i < size; i++)
@@ -83,6 +92,7 @@ void Sorter::selectionSort(num * array, int size)
 	}
 }
 
+
 void Sorter::shellSort(num a[], int length)
 {
 	int i, j, increment;
@@ -110,7 +120,6 @@ void Sorter::shellSort(num a[], int length)
 }
 
 
-
 // insertionSort()
 // ============================================
 // Iterate through the array from the element 
@@ -125,11 +134,9 @@ void Sorter::shellSort(num a[], int length)
 void Sorter::insertionSort(num * array, int length)
 {
 
-
-
 	int j, value;
 
-	/// start at index one within the list
+	// start at index one within the list
 	for (int i = 1; i < length; i++)
 	{
 		// 1. Start from the position after the first element.
@@ -158,8 +165,8 @@ void Sorter::insertionSort(num * array, int length)
 };
 
 
-/// Implementation of insertion sort using lines
-/// Sort algorithm defined above.
+// Implementation of insertion sort using lines
+// Sort algorithm defined above.
 void Sorter::insertionSort(Line * array, int length)
 {
 	int j;
@@ -177,8 +184,6 @@ void Sorter::insertionSort(Line * array, int length)
 		array[j + 1] = value;
 	}
 };
-
-
 
 
 // quickSort()
@@ -248,6 +253,7 @@ void Sorter::mergeSort(num * array, int size)
 
 // mergeSort()
 // ============================================
+// http://en.wikibooks.org/wiki/Algorithm_Implementation/Sorting/Merge_sort
 // ============================================
 void Sorter::mergeSort(num * array, int low, int high)
 {
@@ -261,6 +267,10 @@ void Sorter::mergeSort(num * array, int low, int high)
 	}
 }
 
+// merge()
+// ============================================
+// http://en.wikibooks.org/wiki/Algorithm_Implementation/Sorting/Merge_sort
+// ============================================
 void Sorter::merge(num * array, const int low, const int mid, const int high)
 {
 
@@ -313,7 +323,12 @@ void Sorter::merge(num * array, const int low, const int mid, const int high)
 }
 
 
-// Determine if a next lines remains in the file
+// linesRemain(IFSTREAM)
+// ============================================
+// Attempts to capture a nextline from the file.
+// Returns true if successful or false if not.
+// Resets the stream position after the check.
+// ============================================
 bool Sorter::linesRemain(std::ifstream & ifStream)
 {
 	string buffer = "";
@@ -331,7 +346,12 @@ bool Sorter::linesRemain(std::ifstream & ifStream)
 }
 
 
-// Determine if a next lines remains in the file
+// linesRemain(STRING)
+// ============================================
+// Attempts to capture a nextline in a file given
+// by name. Returns true if successful or false if not.
+// Resets the stream position after the check.
+// ============================================
 bool Sorter::linesRemain(string fileName)
 {
 	string buffer = "";
@@ -356,27 +376,27 @@ bool Sorter::linesRemain(string fileName)
 void Sorter::externelMergeSort(num * array, int length)
 {
 
-	//// Files used in exMerge routine.
+	// Files used in exMerge routine.
 	std::string sourceTextOne = FILE_ONE;
 	std::string sourceTextTwo = FILE_TWO;
 	std::string destFileOne = FILE_THREE;
 	std::string destFileTwo = FILE_FOUR;
 	
-	/// The first split of the list is unique in 
-	/// that it calls out to a sorting routine and 
-	/// sorts chunk sizes the size of the buffer.
+	// The first split of the list is unique in 
+	// that it calls out to a sorting routine and 
+	// sorts chunk sizes the size of the buffer.
 	splitInitialList(SOURCE_FILE, FILE_ONE, FILE_TWO);
 
-	///  This is the sorted chunk size that will
-	///  be used in each file on each run. After
-	///  each run it will double in size.
+	//  This is the sorted chunk size that will
+	//  be used in each file on each run. After
+	//  each run it will double in size.
 	int sizeOfNewRecordSet = BUFFER_SIZE;
 	
 
 	do{	
 			combineFiles(sourceTextOne, sourceTextTwo, destFileOne, destFileTwo, sizeOfNewRecordSet);
 
-			/// rotate sources
+			// rotate sources
 			string tempFile = destFileOne;
 			destFileOne = destFileTwo;
 			destFileTwo = tempFile;
@@ -442,23 +462,23 @@ void Sorter::combineFiles(string sourceFileOne, string sourceFileTwo, string out
 
 	while (linesRemain(fileOneInStream) || linesRemain(fileTwoInStream))
 	{
-		/// reset the chunk progress from both files
+		// reset the chunk progress from both files
 		if (fileOneChunkProgress == buffer && fileTwoChunkProgress == buffer)
 		{
 			fileOneChunkProgress = 0;
 			fileTwoChunkProgress = 0;
 		}
 
-		/// swap the file being written to
+		// swap the file being written to
 		if (linesWritten == buffer * 2)
 		{
 			curOutStream = curOutStream == &fileOneOfStream ? &fileTwoOfStream : &fileOneOfStream;
 			linesWritten = 0;
 		}
 
-		/// get next line from file one if lines remain and we haven't taken
-		/// the full buffer from file one yet. otherwise take the next line
-		/// from file two and continue the loop.
+		// get next line from file one if lines remain and we haven't taken
+		// the full buffer from file one yet. otherwise take the next line
+		// from file two and continue the loop.
 		if (linesRemain(fileOneInStream) && fileOneChunkProgress != buffer)
 		{
 			fileOneStrPos = fileOneInStream.tellg();
@@ -473,9 +493,9 @@ void Sorter::combineFiles(string sourceFileOne, string sourceFileTwo, string out
 			continue;
 		}
 
-		/// get the next line from file two if lines remain to be taken
-		/// and we haven't taken a full chunk from file two yet. otherwise
-		/// write the line from file one taken above
+		// get the next line from file two if lines remain to be taken
+		// and we haven't taken a full chunk from file two yet. otherwise
+		// write the line from file one taken above
 		if (linesRemain(fileTwoInStream) && fileTwoChunkProgress != buffer)
 		{
 			fileTwoStrPos = fileTwoInStream.tellg();
@@ -489,9 +509,9 @@ void Sorter::combineFiles(string sourceFileOne, string sourceFileTwo, string out
 			continue;
 		}
 
-		/// if lines are available from both files then we 
-		/// can simply take the lowest of the two and then 
-		/// reset the buffer on the file we did not take from
+		// if lines are available from both files then we 
+		// can simply take the lowest of the two and then 
+		// reset the buffer on the file we did not take from
 		if (fileOneLine.data <= fileTwoLine.data)
 		{
 			writeLine(*curOutStream, fileOneLine);
@@ -517,13 +537,13 @@ void Sorter::combineFiles(string sourceFileOne, string sourceFileTwo, string out
 
 }
 
-//// createInitialList()
-//// ============================================
-//// This method is used to simulate the creation of the 
-//// text file which would be used in the external merge
-//// sort. It essential takes an unsorted array and writes
-//// it out to a text file.
-//// ============================================
+// createInitialList()
+// ============================================
+// This method is used to simulate the creation of the 
+// text file which would be used in the external merge
+// sort. It essential takes an unsorted array and writes
+// it out to a text file.
+// ============================================
 void Sorter::createInitialList(string sourceFile, num * array, int size)
 {
 	std::ofstream sourceOutStream(sourceFile);
@@ -539,57 +559,57 @@ void Sorter::createInitialList(string sourceFile, num * array, int size)
 	sourceOutStream.close();
 }
 
-//// splitInitialList()
-//// ============================================
-//// Takes the source list and splits it out into
-//// files of sorted chunks. 
-//// ============================================
+// splitInitialList()
+// ============================================
+// Takes the source list and splits it out into
+// files of sorted chunks. 
+// ============================================
 void Sorter::splitInitialList(string sourceFile, string outFileOne, string outFileTwo)
 {
-	/// the file streams we'll be working with
-	/// to split the initial source stream into
-	/// two sorted chunk files
+	// the file streams we'll be working with
+	// to split the initial source stream into
+	// two sorted chunk files
 	std::ofstream fileOneStream(outFileOne);
 	std::ofstream fileTwoStream(outFileTwo);
 	std::ifstream sourceFileStream(sourceFile);
 	std::ofstream * curStream = &fileTwoStream;
 
-	/// the buffer which will hold our lines
-	/// as per external merge sort we can only
-	/// hold the buffer size
+	// the buffer which will hold our lines
+	// as per external merge sort we can only
+	// hold the buffer size
 	Line line[BUFFER_SIZE];
 
-	/// used to toggle between lines
+	// used to toggle between lines
 	bool fileOne = true; 
 	
-	/// used to keep track of how many lines
-	/// we've added to the current file
+	// used to keep track of how many lines
+	// we've added to the current file
 	int linesAdded = 0;
 
-	/// keep sorting while there are lines 
-	/// which remain in the source file to 
-	/// sort
+	// keep sorting while there are lines 
+	// which remain in the source file to 
+	// sort
 	while (linesRemain(sourceFileStream))
 	{
-		/// handles when our buffer is full. when 
-		/// the buffer is full then we can sort 
-		/// the current chunk and dump it into a
-		/// text file.
+		// handles when our buffer is full. when 
+		// the buffer is full then we can sort 
+		// the current chunk and dump it into a
+		// text file.
 		if (linesAdded == BUFFER_SIZE)
 		{
-			/// swap the stream
+			// swap the stream
 			curStream = curStream == &fileOneStream ? &fileTwoStream : &fileOneStream;
 			
-			/// sort the chunk
+			// sort the chunk
 			insertionSort(line, BUFFER_SIZE);
 
-			/// write the chunk out to the appropriate file
+			// write the chunk out to the appropriate file
 			for (int i = 0; i < BUFFER_SIZE; i++)
 			{
 				writeLine(*curStream, line[i]);
 			}
 
-			/// reset the buffer counter 
+			// reset the buffer counter 
 			linesAdded = 0;
 			
 			continue;
@@ -600,8 +620,8 @@ void Sorter::splitInitialList(string sourceFile, string outFileOne, string outFi
 	}
 		curStream = curStream == &fileOneStream ? &fileTwoStream : &fileOneStream;
 	
-	/// Take the remainder of the file, sort it and store it 
-	/// in the appropriate text file.
+	// Take the remainder of the file, sort it and store it 
+	// in the appropriate text file.
 	if (linesAdded != 0)
 	{
 		insertionSort(line, linesAdded);
@@ -615,19 +635,16 @@ void Sorter::splitInitialList(string sourceFile, string outFileOne, string outFi
 
 	fileOneStream.close();
 	fileTwoStream.close();
-
-
-
 	sourceFileStream.close();
 
 	}
 
 
-/// writeArray()
-//// ============================================
-/// Takes in the array and writes it out to the file
-/// using the write line method.
-//// ============================================
+// writeArray()
+// ============================================
+// Takes in the array and writes it out to the file
+// using the write line method.
+// ============================================
 void Sorter::writeArray(num * array, int size, string name)
 {
 	std::ofstream outFileStream(name);
@@ -644,15 +661,15 @@ void Sorter::writeArray(num * array, int size, string name)
 }
 
 	
-//// getNextLine()
-//// ============================================
-//// Creates a line structure out of the line 
-//// taken from the input file stream. At the moment
-//// there is no exception handling in place. In the 
-//// future this should implement some sort of conversion
-//// error exception. Additionally, a tokenizing routine
-//// might be useful in the future.
-//// ============================================
+// getNextLine()
+// ============================================
+// Creates a line structure out of the line 
+// taken from the input file stream. At the moment
+// there is no exception handling in place. In the 
+// future this should implement some sort of conversion
+// error exception. Additionally, a tokenizing routine
+// might be useful in the future.
+// ============================================
 Line Sorter::getNextLine(std::ifstream & ifStream)
 {
 	// get the next line from the text file	
