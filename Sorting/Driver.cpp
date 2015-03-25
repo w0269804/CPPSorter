@@ -3,10 +3,10 @@
 void Driver::runSorts()
 {
 	srand(time(NULL)); // seed random number generator
+	
 	num array[arraySize]; // create the array
 	sorter.createArray(array, arraySize); // randomize the contents of the array
 
-	/// write the original, unsorted array to file
 	std::cout << "\tWriting Unsorted Array to Original." << SOURCE_FILE << std::endl;
 	sorter.writeArray(array, arraySize, SOURCE_FILE);
 

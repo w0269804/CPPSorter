@@ -9,11 +9,14 @@
 #include <fstream>
 using std::string;
 
+
+#define DEBUG
+
 /*
 	Constants used throughout the program.
 */
 typedef unsigned long num;
-const int MAX_NUMBER = 1000000;
+const int MAX_NUMBER = 1000;
 const int arraySize = 10000;
 const string SOURCE_FILE = "Source.txt";
 const string FILE_ONE = "FileOne.txt";

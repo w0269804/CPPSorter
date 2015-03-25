@@ -2,6 +2,7 @@
  /* 
 	References
 		 Insertion Sort: http://en.wikibooks.org/wiki/Algorithm_Implementation/Sorting/Insertion_sort
+		 Insertion Sort: http://upload.wikimedia.org/wikipedia/commons/0/0f/Insertion-sort-example-300px.gif
 		 Merge Sort: http://en.wikibooks.org/wiki/Algorithm_Implementation/Sorting/Merge_sort
 		 Quick Sort: Hal O'Connel's lecture slides from Data Structures (Prog 2400, 2015)
 		 Bubble Sort: Hal O'Connel's lecture slides from Data Structures (Prog 2400, 2015)
@@ -70,7 +71,7 @@ void Sorter::bubbleSort(num * array, int size)
 // Check each position to see if the element
 // after the current position is greater than
 // the element being checked. If it is greater
-// then the current element then swap them. The
+// than the current element then swap them. The
 // tail of the list will hold the next highest
 // element until the list is sorted.
 // ============================================
@@ -156,9 +157,11 @@ void Sorter::insertionSort(num * array, int length)
 			array[j + 1] = array[j];
 		}
 
-		// 3. This gets decremented one last time on the exit of the 
-		//    the loop so that the value being looked at can fit before
-		//    all the elements which have been shifted forward.
+		//  3. (The key to this final decrement is the fact that j
+		//     is declared outside the loop so it gets reduced by one.
+		//     After all the shifts the value gets placed in its correct
+		//     spot (one less than the last element examined).
+		
 
 		array[j + 1] = value;
 	}
@@ -198,9 +201,13 @@ void Sorter::quickSort(num * array, int length)
 
 // quickSort()
 // ============================================
-// I've looked at this recursive algorithm a 
-// dozen times. I'm going to need Hal to explain
-// to me how the recursion works.
+// Quicksort functions by moving all elements
+// to the left of a pivot recursively; each 
+// pass terminates when the pivot and the end
+// position terminate such that each portion 
+// is sorted. The first call continues to the 
+// right hand side after the lefthand side has
+// finished being sorted.
 // ============================================
 void Sorter::quickSort(num *array, int beg, int end, int size)
 {
@@ -252,76 +259,104 @@ void Sorter::mergeSort(num * array, int size)
 }
 
 // mergeSort()
-// ============================================
+// ========================================================================================
 // http://en.wikibooks.org/wiki/Algorithm_Implementation/Sorting/Merge_sort
-// ============================================
+// This merge sort works by recursively dividing the list into smaller parts
+// through calls to the merge sort method. As each call completes the portion
+// of sorted pieces grows. When it reaches the bottom of the recursing it will 
+// be merging two pieces. After the left hand side has been sorted the last recursive
+// call to mergeSort() will hit the right hand merge sort and complete the process
+// again. As the recursive calls complete the number of sorted pieces will grow until
+// eventually the last call will be the merging of the original call to merge sort
+// which will merge from 0 to mid to mid + 1 to high.
+// ========================================================================================
 void Sorter::mergeSort(num * array, int low, int high)
 {
 	int mid;
 	if (low < high)
 	{
 		mid = (low + high) / 2; // find the middle position (where to divide the array)
-		mergeSort(array, low, mid); // sort from lowest position to middle;
+		mergeSort(array, low, mid); // divide the array in half
 		mergeSort(array, mid + 1, high); // sort from middle + 1 to end
 		merge(array, low, mid, high); // merge the two sorted halves.
 	}
 }
 
 // merge()
-// ============================================
+// ========================================================================================
 // http://en.wikibooks.org/wiki/Algorithm_Implementation/Sorting/Merge_sort
-// ============================================
-void Sorter::merge(num * array, const int low, const int mid, const int high)
+// This method is akin to the external merge sort algorithm, albeit a little
+// terser. It will simply take the two chunks, from the lowest to mid and from
+// mid + 1 to high and dump them into a new array. If there are no more numbers to
+// take from one side then we can simply take the remainder from the other side.
+// ========================================================================================
+void Sorter::merge(num * arrayToSort, const int low, const int mid, const int high)
 {
 
-	// Variables declaration. 
-	int * b = new int[high + 1 - low];
-	int h, i, j, k;
-	h = low;
-	i = 0;
-	j = mid + 1;
-	// Merges the two array's into b[] until the first one is finished
-	while ((h <= mid) && (j <= high))
+	num * sortedWhole = new num[high + 1 - low]; // create a new array to hold the sorted parts
+
+	int lowPortionCount, totalElementsAdded, highPortionCount, k;
+
+	lowPortionCount = low; // counter for low portion
+	highPortionCount = mid + 1; // counter for high portion
+	totalElementsAdded = 0;
+
+	while ((lowPortionCount <= mid) && (highPortionCount <= high))
 	{
-		if (array[h] <= array[j])
+		if (arrayToSort[lowPortionCount] <= arrayToSort[highPortionCount])
 		{
-			b[i] = array[h];
-			h++;
+			sortedWhole[totalElementsAdded] = arrayToSort[lowPortionCount];
+			lowPortionCount++;
 		}
 		else
 		{
-			b[i] = array[j];
-			j++;
+			sortedWhole[totalElementsAdded] = arrayToSort[highPortionCount];
+			highPortionCount++;
 		}
-		i++;
+		totalElementsAdded++;
 	}
-	// Completes the array filling in it the missing values
-	if (h > mid)
+
+	if (lowPortionCount > mid)
 	{
-		for (k = j; k <= high; k++)
+		for (k = highPortionCount; k <= high; k++)
 		{
-			b[i] = array[k];
-			i++;
+			sortedWhole[totalElementsAdded] = arrayToSort[k];
+			totalElementsAdded++;
 		}
 	}
 	else
 	{
-		for (k = h; k <= mid; k++)
+		for (k = lowPortionCount; k <= mid; k++)
 		{
-			b[i] = array[k];
-			i++;
+			sortedWhole[totalElementsAdded] = arrayToSort[k];
+			totalElementsAdded++;
 		}
 	}
-	// Prints into the original array
+
+	// copy over into the original array
+	// which was passed by reference
 	for (k = 0; k <= high - low; k++)
 	{
-		array[k + low] = b[k];
+		arrayToSort[k + low] = sortedWhole[k];
 	}
 
-	delete[] b;
+	delete[] sortedWhole;
 
 }
 
+
+// printArray
+void Sorter::printArray(num * arrayToPrint, int size)
+{
+
+
+	for (int i = 0; i < size; i++)
+	{
+		std::cout << arrayToPrint[i] << " ";
+	}
+
+	std::cout << std::endl;
+}
 
 // linesRemain(IFSTREAM)
 // ============================================
